@@ -8,6 +8,6 @@ namespace DynamoLeagueScrape.Players
 {
     interface IPlayersRepository
     {
-        void UpdateSingle(int teamID, string imageURL, string playerName);
+        void UpdateSingle(clsPlayers player);
     }
 }

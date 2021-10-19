@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
 using System;
+using System.Collections.Generic;
 
 namespace DynamoLeagueScrape
 {
@@ -7,18 +8,42 @@ namespace DynamoLeagueScrape
     {
         static void Main(string[] args)
         {
-            var teamsRepository = Teams.clsTeams.CreateTeamsRepository(Properties.Resources.connString);
+            var teamsRepository = Teams.clsTeams.CreateTeamsRepository(FFUpdates_DynamoLeagueScrape.Properties.Resources.connString);
             var teams = teamsRepository.SelectAll();
+            List<Players.clsPlayers> lstPlayers = new List<Players.clsPlayers>();
 
             foreach (Teams.clsTeams team in teams)
             {
+                //Scrape teams
                 HtmlWeb web = new HtmlWeb();
                 HtmlDocument doc = web.Load(@$"https://dynamoleague.com/Team/Details?teamId={team.DynamoID}");
-                var HeaderNames = doc.DocumentNode.SelectNodes("//td[@class='sorting_1']");
 
-                //for each player from scrape
-                var playersRepository = Players.clsPlayers.CreatePlayersRepository(Properties.Resources.connString);
-                //playersRepository.UpdateSingle(player.TeamID, player.imageURL, player.Name);
+                foreach (HtmlNode table in doc.DocumentNode.SelectNodes("//tbody"))
+                {
+                    foreach (HtmlNode row in table.SelectNodes("tr"))
+                    {
+
+                        //Add scraped player to list
+                        lstPlayers.Add(
+                            new DynamoLeagueScrape.Players.clsPlayers(
+                                row.SelectNodes("td")[0].InnerText.Trim(),
+                                team.ID,
+                                row.SelectNodes("td")[1].InnerText.Trim(),
+                                row.SelectNodes("td")[0].SelectSingleNode("img").Attributes[0].Value,
+                                Convert.ToInt16(row.SelectNodes("td")[2].InnerText.Trim()),
+                                Convert.ToInt16(row.SelectNodes("td")[3].InnerText.Trim())
+                            ));
+                    }
+                }
+
+                //Save Players List to DB
+                var playersRepository = Players.clsPlayers.CreatePlayersRepository(FFUpdates_DynamoLeagueScrape.Properties.Resources.connString);
+                foreach (Players.clsPlayers player in lstPlayers)
+                {
+                    playersRepository.UpdateSingle(player);
+                }
+
+
             }
 
         }

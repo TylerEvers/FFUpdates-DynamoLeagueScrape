@@ -18,11 +18,11 @@ namespace DynamoLeagueScrape.Players
             this.db = new SqlConnection(connString);
         }
 
-        void IPlayersRepository.UpdateSingle(int teamID, string imageURL, string playerName)
+        void IPlayersRepository.UpdateSingle(clsPlayers player)
         {
             string query = @$"UPDATE Players
-                           SET TeamID = {teamID}, PlayerImage = {imageURL}                             
-                           WHERE PlayerName = {playerName}";
+                           SET TeamID = {player.TeamID}, PlayerImage = '{player.ImageURL}', contractThrough = {player.ContractThrough}, capSpace = {player.ContractValue}                      
+                           WHERE PlayerName = '{player.FullName}'";
 
             this.db.ExecuteScalar(query);
         }
