@@ -15,8 +15,7 @@ namespace DynamoLeagueScrape
             foreach (Teams.clsTeams team in teams)
             {
                 //Scrape teams
-                HtmlWeb web = new HtmlWeb();
-                HtmlDocument doc = web.Load(@$"https://dynamoleague.com/Team/Details?teamId={team.DynamoID}");
+                HtmlDocument doc = ScrapeTeam(team.DynamoID);
 
                 foreach (HtmlNode table in doc.DocumentNode.SelectNodes("//tbody"))
                 {
@@ -46,6 +45,12 @@ namespace DynamoLeagueScrape
 
             }
 
+        }
+
+        public static HtmlDocument ScrapeTeam(int teamID)
+        {
+            HtmlWeb web = new HtmlWeb();
+            return web.Load(@$"https://dynamoleague.com/Team/Details?teamId={teamID}");
         }
     }
 }
