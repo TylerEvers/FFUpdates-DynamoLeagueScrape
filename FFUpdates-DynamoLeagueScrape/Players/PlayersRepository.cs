@@ -21,7 +21,7 @@ namespace DynamoLeagueScrape.Players
         void IPlayersRepository.UpdateSingle(clsPlayers player)
         {
             string query = @$"UPDATE Players
-                           SET TeamID = {player.TeamID}, PlayerImage = '{player.ImageURL}', contractThrough = {player.ContractThrough}, capSpace = {player.ContractValue}                      
+                           SET TeamID = {player.TeamID}, PlayerImage = '{player.ImageURL}', contractThrough = {player.ContractThrough}, capSpace = {player.ContractValue}, playerStatus = {player.PlayerStatus}                      
                            WHERE PlayerName = '{player.FullName}'";
 
             this.db.ExecuteScalar(query);
