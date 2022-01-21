@@ -15,20 +15,18 @@ namespace DynamoLeagueScrape
             foreach (Teams.clsTeams team in teams)
             {
                 //Scrape teams
-                HtmlDocument doc = ScrapeTeam(team.DynamoID);
+                HtmlDocument doc = ScrapeTeam(team.DynamoID); //TODO: Site was redesigned, need to pass an authentication layer now, research AspNetCore.Identity.Application
 
                 foreach (HtmlNode table in doc.DocumentNode.SelectNodes("//tbody"))
                 {
                     foreach (HtmlNode row in table.SelectNodes("tr"))
                     {
-
                         //Add scraped player to list
                         lstPlayers.Add(
                             new DynamoLeagueScrape.Players.clsPlayers(
                                 row.SelectNodes("td")[0].InnerText.Trim(),
                                 team.ID,
                                 row.SelectNodes("td")[1].InnerText.Trim(),
-                                row.SelectNodes("td")[0].SelectSingleNode("img").Attributes[0].Value,
                                 Convert.ToInt16(row.SelectNodes("td")[2].InnerText.Trim()),
                                 Convert.ToInt16(row.SelectNodes("td")[3].InnerText.Trim())
                             ));
@@ -50,7 +48,7 @@ namespace DynamoLeagueScrape
         public static HtmlDocument ScrapeTeam(int teamID)
         {
             HtmlWeb web = new HtmlWeb();
-            return web.Load(@$"https://dynamoleague.com/Team/Details?teamId={teamID}");
+            return web.Load(@$"https://dynamoleague.com/teams/{teamID}");
         }
     }
 }

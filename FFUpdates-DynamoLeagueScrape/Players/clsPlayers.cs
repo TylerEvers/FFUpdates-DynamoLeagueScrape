@@ -18,8 +18,6 @@ namespace DynamoLeagueScrape.Players
 
         public string Position { get; set; }
 
-        public string ImageURL { get; set; }
-
         public int ContractThrough { get; set; }
 
         public int ContractValue { get; set; }
@@ -29,12 +27,11 @@ namespace DynamoLeagueScrape.Players
 
         }
 
-        public clsPlayers(string name, int teamID, string position, string img, int contractThrough, int contractValue)
+        public clsPlayers(string name, int teamID, string position, int contractValue, int contractThrough)
         {
             FullName = name;
             TeamID = teamID;
             Position = position;
-            ImageURL = img;
             ContractThrough = contractThrough;
             ContractValue = contractValue;
         }
