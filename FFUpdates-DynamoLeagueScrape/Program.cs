@@ -17,7 +17,6 @@ namespace DynamoLeagueScrape
                 //Scrape teams
                 HtmlDocument doc = ScrapeTeam(team.DynamoID); //TODO: Site was redesigned, need to pass an authentication layer now, research AspNetCore.Identity.Application
 
-                int tableIndex = 0;
                 foreach (HtmlNode table in doc.DocumentNode.SelectNodes("//tbody"))
                 {
                     foreach (HtmlNode row in table.SelectNodes("tr"))
@@ -34,31 +33,12 @@ namespace DynamoLeagueScrape
                     }
                 }
 
-                    tableIndex += 1;
+                //Save Players List to DB
+                var playersRepository = Players.clsPlayers.CreatePlayersRepository(FFUpdates_DynamoLeagueScrape.Properties.Resources.connString);
+                foreach (Players.clsPlayers player in lstPlayers)
+                {
+                    playersRepository.UpdateSingle(player);
                 }
-            }
-
-            //Save Players List to DB
-            var playersRepository = Players.clsPlayers.CreatePlayersRepository(FFUpdates_DynamoLeagueScrape.Properties.Resources.connString);
-            foreach (Players.clsPlayers player in lstPlayers)
-            {
-                playersRepository.UpdateSingle(player);
-            }
-
-        }
-
-        private static int GetStatus(int tableIndex)
-        {
-            switch (tableIndex)
-            {
-                case 0:
-                    return 2; // Rostered
-                case 1:
-                    return 1; // Cut/FA
-                case 2:
-                    return 2; // Rostered (Unsigned)
-                default:
-                    return 4; // Unknown
             }
         }
 
