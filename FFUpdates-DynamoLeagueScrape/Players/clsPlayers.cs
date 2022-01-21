@@ -18,28 +18,22 @@ namespace DynamoLeagueScrape.Players
 
         public string Position { get; set; }
 
-        public string ImageURL { get; set; }
-
         public int ContractThrough { get; set; }
 
         public int ContractValue { get; set; }
-
-        public int PlayerStatus { get; set; }
 
         public clsPlayers()
         {
 
         }
 
-        public clsPlayers(string name, int teamID, string position, string img, int contractThrough, int contractValue, int playerStatus)
+        public clsPlayers(string name, int teamID, string position, int contractValue, int contractThrough)
         {
             FullName = name;
             TeamID = teamID;
             Position = position;
-            ImageURL = img;
             ContractThrough = contractThrough;
             ContractValue = contractValue;
-            PlayerStatus = playerStatus;
         }
 
         public static IPlayersRepository CreatePlayersRepository(string connString)

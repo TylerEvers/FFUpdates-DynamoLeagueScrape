@@ -15,61 +15,37 @@ namespace DynamoLeagueScrape
             foreach (Teams.clsTeams team in teams)
             {
                 //Scrape teams
-                HtmlDocument doc = ScrapeTeam(team.DynamoID);
+                HtmlDocument doc = ScrapeTeam(team.DynamoID); //TODO: Site was redesigned, need to pass an authentication layer now, research AspNetCore.Identity.Application
 
-                int tableIndex = 0;
                 foreach (HtmlNode table in doc.DocumentNode.SelectNodes("//tbody"))
                 {
-                    if (table.SelectNodes("tr") != null)
+                    foreach (HtmlNode row in table.SelectNodes("tr"))
                     {
-                        foreach (HtmlNode row in table.SelectNodes("tr"))
-                        {
-                            //Add scraped player to list
-                            lstPlayers.Add(
-                                new DynamoLeagueScrape.Players.clsPlayers(
-                                    row.SelectNodes("td")[0].InnerText.Trim(),
-                                    team.ID,
-                                    row.SelectNodes("td")[1].InnerText.Trim(),
-                                    row.SelectNodes("td")[0].SelectSingleNode("img").Attributes[0].Value,
-                                    Convert.ToInt16(row.SelectNodes("td")[2].InnerText.Trim()),
-                                    Convert.ToInt16(row.SelectNodes("td")[3].InnerText.Trim()),
-                                    GetStatus(tableIndex)
-                                ));
-                        }
+                        //Add scraped player to list
+                        lstPlayers.Add(
+                            new DynamoLeagueScrape.Players.clsPlayers(
+                                row.SelectNodes("td")[0].InnerText.Trim(),
+                                team.ID,
+                                row.SelectNodes("td")[1].InnerText.Trim(),
+                                Convert.ToInt16(row.SelectNodes("td")[2].InnerText.Trim()),
+                                Convert.ToInt16(row.SelectNodes("td")[3].InnerText.Trim())
+                            ));
                     }
-
-                    tableIndex += 1;
                 }
-            }
 
-            //Save Players List to DB
-            var playersRepository = Players.clsPlayers.CreatePlayersRepository(FFUpdates_DynamoLeagueScrape.Properties.Resources.connString);
-            foreach (Players.clsPlayers player in lstPlayers)
-            {
-                playersRepository.UpdateSingle(player);
-            }
-
-        }
-
-        private static int GetStatus(int tableIndex)
-        {
-            switch (tableIndex)
-            {
-                case 0:
-                    return 2; // Rostered
-                case 1:
-                    return 1; // Cut/FA
-                case 2:
-                    return 2; // Rostered (Unsigned)
-                default:
-                    return 4; // Unknown
+                //Save Players List to DB
+                var playersRepository = Players.clsPlayers.CreatePlayersRepository(FFUpdates_DynamoLeagueScrape.Properties.Resources.connString);
+                foreach (Players.clsPlayers player in lstPlayers)
+                {
+                    playersRepository.UpdateSingle(player);
+                }
             }
         }
 
         public static HtmlDocument ScrapeTeam(int teamID)
         {
             HtmlWeb web = new HtmlWeb();
-            return web.Load(@$"https://dynamoleague.com/Team/Details?teamId={teamID}");
+            return web.Load(@$"https://dynamoleague.com/teams/{teamID}");
         }
     }
 }
